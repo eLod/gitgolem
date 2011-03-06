@@ -10,6 +10,7 @@ end
 require 'rake'
 
 require 'jeweler'
+require './lib/golem/version.rb'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "golem"
@@ -19,6 +20,8 @@ Jeweler::Tasks.new do |gem|
   gem.description = %Q{Golem provides an easy way to host and manage access to git repositories on a server under a single user.}
   gem.email = "pota@mosfet.hu"
   gem.authors = ["PoTa"]
+  gem.version = Golem::Version::STRING
+  gem.executables = ["golem"]
   # Include your dependencies below. Runtime dependencies are required when using your gem,
   # and development dependencies are only needed for development (ie running rake tasks, tests, etc)
   #  gem.add_runtime_dependency 'jabber4r', '> 0.1'
@@ -43,4 +46,6 @@ end
 task :default => :test
 
 require 'yard'
-YARD::Rake::YardocTask.new
+YARD::Rake::YardocTask.new do |yard|
+    yard.options << '--no-private'
+end
