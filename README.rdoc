@@ -32,10 +32,12 @@ Golem supports the following configuration variables:
 * +cfg_path+: path to config file, if not set searched for as (in this order)
   * GOLEM_CONFIG environment variable (if set)
   * 'golem.conf.rb' relative to GOLEM_BASE environment variable (if set)
+  * /usr/local/etc/golem/golem.conf.rb
   * /usr/local/etc/golem.conf.rb
+  * /etc/golem/golem.conf.rb
   * /etc/golem.conf.rb
   * ~/golem.conf.rb
-  * if none found, it is set to +base_dir+ + "/golem.conf.rb" after configuration
+  * if found it is required (e.g. loaded), otherwise set to +base_dir+ + "/golem.conf.rb" after configuration
 * +base_dir+: convenience feature, may be used to store installation, if not explicitly set defaults to
   * GOLEM_BASE environment variable (if set)
   * basedir of +cfg_path+ if file exists

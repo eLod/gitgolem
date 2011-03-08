@@ -1,7 +1,7 @@
 # Configuration management.
 module Golem::Config
     # List of paths config file is searched for.
-    CFG_PATHS = ["/usr/local/etc/golem.conf.rb", "/etc/golem.conf.rb", "~/golem.conf.rb"]
+    CFG_PATHS = ["/usr/local/etc/golem/golem.conf.rb", "/usr/local/etc/golem.conf.rb", "/etc/golem/golem.conf.rb", "/etc/golem.conf.rb", "~/golem.conf.rb"]
     # List of available config variable names.
     CFG_VARS = [:db, :user_home, :repository_dir, :cfg_path, :base_dir, :bin_dir, :hooks_dir]
 
@@ -10,17 +10,21 @@ module Golem::Config
     def self.auto_configure(path = nil)
 	path = if ENV.key?('GOLEM_CONFIG') && File.exists?(ENV['GOLEM_CONFIG'])
 	    ENV['GOLEM_CONFIG']
-	elsif ENV.key?('GOLEM_BASE') && File.exists?(ENV['GOLEM_BASE'] + "/golem.conf.rb")
+	elsif ENV.key?('GOLEM_BASE') && File.exists?(ENV['GOLEM_BASE'].to_s + "/golem.conf.rb")
 	    ENV['GOLEM_BASE'].to_s + "/golem.conf.rb"
 	else
 	    CFG_PATHS.find {|try_path| File.exists?(try_path)}
-	end unless File.exists?(path)
-	if File.exists?(path)
-	    require path
-	    self.cfg_path = path
-	    self
+	end unless File.exists?(path.to_s)
+	if File.exists?(path.to_s)
+	    require path.to_s
+	    if @vars
+		self.cfg_path = path.to_s
+		self
+	    else #configure was not called from config file
+		configure path.to_s
+	    end
 	else
-	    configure path
+	    configure path.to_s
 	end
     end
 
