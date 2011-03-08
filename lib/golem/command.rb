@@ -87,7 +87,7 @@ module Golem::Command
 		hook_src = Golem::Config.hook_path(hook)
 		next unless File.file?(hook_src) && File.stat(hook_src).executable? && hook[0..0] != "."
 		File.symlink(hook_src, path + '/hooks/' + hook)
-		p "Hook installed from #{hook_src} to #{path}/hooks/#{hook}." if verbose?
+		print "Hook installed from #{hook_src} to #{path}/hooks/#{hook}.\n" if verbose?
 	    end if File.directory?(Golem::Config.hooks_dir)
 	end
 
@@ -100,7 +100,7 @@ module Golem::Command
 		File.delete(hook_src) if File.symlink?(hook_src) && ! File.file?(hook_src)
 		next unless File.file?(hook_src) && File.stat(hook_src).executable? && hook[0..0] != "."
 		File.delete(hook_src)
-		p "Hook removed from #{hook_src}." if verbose?
+		print "Hook removed from #{hook_src}.\n" if verbose?
 	    end
 	end
     end

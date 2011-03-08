@@ -12,7 +12,7 @@ class Golem::Command::CreateRepository < Golem::Command::Base
 	pwd = Dir.pwd
 	Dir.mkdir(path, 0700)
 	Dir.chdir(path)
-	system('git --bare init >&2')
+	system('git --bare init ' + (verbose? ? '>&2' : '>/dev/null 2>&1'))
 	print "Repository #{path} created, installing hooks...\n" if verbose?
 	install_hooks(name)
 	Dir.chdir(pwd)
