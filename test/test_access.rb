@@ -17,4 +17,15 @@ class TestAccess < WithTestDb
 	assert_kind_of Hash, Golem::Access.ssh_keys
 	assert_equal keys.inject({}) {|m, (u, k)| m[u] = k.is_a?(Array) ? k : [k]; m}, Golem::Access.ssh_keys
     end
+
+    def test_convenience_methods
+	assert Golem::Access.read?("receive-pack")
+	assert !Golem::Access.write?("receive-pack")
+	["upload-pack", "upload-archive"].each do |w|
+	    assert !Golem::Access.read?(w)
+	    assert Golem::Access.write?(w)
+	end
+	assert !Golem::Access.read?("invalid")
+	assert !Golem::Access.write?("invalid")
+    end
 end
