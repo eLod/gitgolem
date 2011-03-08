@@ -32,13 +32,13 @@ module Golem::Access
     end
 
     # Convenience method to check if requested access type is read (e.g. command was +receive-pack+).
-    # @returns [Boolean] if read access was requested.
+    # @return [Boolean] if read access was requested.
     def self.read?(gitcmd)
 	gitcmd == "receive-pack"
     end
 
     # Convenience method to check if requested access type is write (e.g. command was +upload-pack+ or +upload-archive+).
-    # @returns [Boolean] if write access was requested.
+    # @return [Boolean] if write access was requested.
     def self.write?(gitcmd)
 	!!gitcmd.match(/\Aupload-(pack|archive)\z/)
     end

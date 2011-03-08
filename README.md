@@ -62,32 +62,11 @@ writes lines like `command="/path/to/golem-auth 'username'" ssh-dss AAA...` inst
 
 Golem supports another configuration variable called `keys_file_ssh_opts`, which is simply placed after the _environment=""_ or _command=""_ block. If `keys_file_use_command` is false (using
 _environment=""_) golem simply injects the string into the lines, however if `keys_file_use_command` is true and `keys_file_ssh_opts` is not set (is `nil`) golem uses
-{Golem::Command::UpdateKeysFile::SSH\_OPTS\_COMMAND\_DEFAULT} (if it is not `nil` golem uses the configuration value). The reasoning behind
-this is golem assumes you control your SSHD's settings if using _environment=""_, but you may not set (global) restrictions when using _command=""_. The final line looks something like
+{Golem::Command::UpdateKeysFile::SSH\_OPTS\_COMMAND\_DEFAULT} (if it is not `nil` golem uses the configuration value). The reasoning behind this distinction is golem assumes you control
+your SSHD's settings if using _environment=""_, but you may not (want to) set (global) restrictions when using _command=""_. The final line looks something like
 `environment="GOLEM_USER='username'",ssh,opts ssh-dss AAA...` or `command="/path/to/golem-auth 'username'",ssh,opts ssh-dss AAA...`.
 
 **Please note:** golem does not overwrite the whole `.ssh/authorized_keys` file.
-
-## Database
-
-Golem currently supports postgres and a static databases only, but it should be trivial to extend it (contributions are always welcome).
-
-The static database is suitable for small installations (where an rdbms would be an overkill), to use it simply write:
-
-  Golem.configure do |cfg|
-    cfg.db = 'static'
-    Golem::DB.setup do |db|
-      db.add_user 'test_user'
-      db.add_repository 'test_repository', 'test_user'
-      db.add_key 'test_user', 'test_key'
-    end
-  end
-
-The postgres database stores data in 3 tables (users, repositories, keys), and can be used with setting the db variable to the postgres url (e.g. `postgres://user:pw@host/db`).
-A sample schema can be found in `lib/golem/db/postgres.sql`, and it is imported by {Golem::DB::Pg#setup} (please note: {Golem::DB.setup} forwards to it, should be called
-only once).
-
-At least users and repositories should have names, keys should have an attribute named `key` that is the whole key (e.g. cat id_rsa.pub).
 
 ## Access control
 
@@ -101,19 +80,88 @@ You should check out {https://github.com/sitaramc/gitolite gitolite}, which supp
 {https://github.com/sitaramc/gitolite gitolite}'s hooks in Golem's `hooks_dir` and achieve the same results (this requires deeper understanding of git, so
 please be aware).
 
+## Public access
+
+Golem does not support providing public (read-only anonymous) access to git repositories as it relies on SSH's key-based authentication. However there are a couple of alternatives
+to solve this, with each having its pros and cons: {http://progit.org/book/ch4-5.html serving the repository as a static website}, {http://progit.org/book/ch4-6.html using GitWeb}
+or {http://progit.org/book/ch4-9.html using Git Daemon}.
+
+## Database
+
+Golem currently supports postgres and a static databases only, but it should be trivial to extend it (contributions are always welcome). At least users and repositories
+should have names, keys should have an attribute named `key` that is the whole key (e.g. cat id_rsa.pub).
+
+The {Golem::DB::Static static database} is suitable for small installations (where an rdbms would be an overkill), to use it simply write:
+
+    Golem.configure do |cfg|
+      cfg.db = 'static'
+      Golem::DB.setup do |db|
+        db.add_user 'test_user'
+        db.add_repository 'test_repository', 'test_user'
+        db.add_key 'test_user', 'test_key'
+      end
+    end
+
+The postgres database stores data in 3 tables (users, repositories, keys) by default, and can be used with setting the db variable to the postgres url (e.g. `postgres://user:pw@host/db`).
+A sample schema can be found in `lib/golem/db/postgres.sql`, and it is imported by {Golem::DB::Pg#setup} (please note: {Golem::DB.setup} forwards to it, should be called
+only once). A minimal setup for postgres would be:
+
+    Golem.configure do |cfg|
+      cfg.db = "postgres://user:pwd@host/dbname"
+      cfg.bin_dir = "/usr/local/bin"
+    end
+
+A more complex setup with collaborators:
+
+    Golem.configure do |cfg|
+      Golem::DB::Pg.instance_eval do
+        #add method to query collaborators
+        def collaborators(opts = {})
+          opts[:table] = "collaborators join users on collaborators.user_name=users.name"
+          get(opts)
+        end
+
+        #add method to check if user is a collaborator of a given repository
+        def collaborator?(user, repo)
+          collaborators(:user_name => user, :repository_name => repo, :fields => :name).length > 0
+        end
+
+        #override setup to add our collaborators table
+        alias_method :setup_orig, :setup
+        def setup
+          setup_orig
+          @connection.exec("CREATE TABLE collaborators (user_name varchar(32) NOT NULL REFERENCES users (name), repository_name varchar(32) NOT NULL REFERENCES repositories (name), PRIMARY KEY (user_name, repository_name));")
+        end
+      end
+      Golem::DB.class_eval do
+        #add method proxy to check collaborator status
+        def collaborator?(user, repo)
+          db.collaborator?(user, repo)
+        end
+      end
+      Golem::Access.class_eval do
+        #override check to grant access to collaborators
+        alias_method :check_orig, :check
+        def check(user, repo, gitcmd)
+          Golem::DB.collaborator?(user, repo) || check_orig(user, repo, gitcmd)
+        end
+      end
+      cfg.db = 'postgres://user:pwd@host/dbname'
+    end
+
 ## Commands
 
 Golem provides an executable, and supports a few commands to easily automate the administration:
 
 * auth: is used for authorization by sshd,
-* clear_repositories: clear old data (e.g. suitable for cron),
-* create_repository: create a repository manually (new repositories are created on first access by golem),
-* delete_repository: delete a repository manually,
+* clear\_repositories: clear old data (e.g. suitable for cron),
+* create\_repository: create a repository manually (new repositories are created automatically by golem on first access),
+* delete\_repository: delete a repository manually,
 * environment: list configuration variables,
-* save_config: save configuration variables,
-* setup_db: setup database schema (useful for postgres only),
-* update_hooks: update hooks in every repository,
-* update_keys_file: update the .ssh/authorized_keys file.
+* save\_config: save configuration variables,
+* setup\_db: setup database schema (useful for postgres only),
+* update\_hooks: update hooks in every repository,
+* update\_keys\_file: update the .ssh/authorized_keys file.
 
 You can get details about commands running `golem -h` or `--help`.
 
