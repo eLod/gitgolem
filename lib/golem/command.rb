@@ -1,13 +1,15 @@
 # Namespace for commands.
 module Golem::Command
     # List of command names as symbols.
-    COMMANDS = [:auth, :clear_repositories, :create_repository, :delete_repository, :environment, :save_config, :update_hooks, :update_keys_file]
+    COMMANDS = [:auth, :clear_repositories, :create_repository, :delete_repository, :environment, :save_config, :setup_db, :update_hooks, :update_keys_file]
     # Hash of aliases.
     ALIASES = {
 	:clear_repositories => ["clear-repositories", "clear-repos", "clear_repos"],
 	:create_repository => ["create-repository", "create-repo", "create_repo"],
 	:delete_repository => ["delete-repository", "delete-repo", "delete_repo"],
+	:environment => ["env"],
 	:save_config => ["save-config", "save"],
+	:setup_db => ["setup-db", "setup"],
 	:update_hooks => ["update-hooks"],
 	:update_keys_file => ["update-keys-file", "update-keys", "update_keys"],
     }
@@ -18,6 +20,7 @@ module Golem::Command
     autoload :DeleteRepository, "golem/command/delete_repository"
     autoload :Environment, "golem/command/environment"
     autoload :SaveConfig, "golem/command/save_config"
+    autoload :SetupDb, "golem/command/setup_db"
     autoload :UpdateHooks, "golem/command/update_hooks"
     autoload :UpdateKeysFile, "golem/command/update_keys_file"
 

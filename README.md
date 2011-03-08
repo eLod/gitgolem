@@ -111,6 +111,7 @@ Golem provides an executable, and supports a few commands to easily automate the
 * delete_repository: delete a repository manually,
 * environment: list configuration variables,
 * save_config: save configuration variables,
+* setup_db: setup database schema (useful for postgres only),
 * update_hooks: update hooks in every repository,
 * update_keys_file: update the .ssh/authorized_keys file.
 
