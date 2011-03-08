@@ -3,7 +3,7 @@ module Golem::Config
     # List of paths config file is searched for.
     CFG_PATHS = ["/usr/local/etc/golem/golem.conf.rb", "/usr/local/etc/golem.conf.rb", "/etc/golem/golem.conf.rb", "/etc/golem.conf.rb", "~/golem.conf.rb"]
     # List of available config variable names.
-    CFG_VARS = [:db, :user_home, :repository_dir, :cfg_path, :base_dir, :bin_dir, :hooks_dir]
+    CFG_VARS = [:db, :user_home, :repository_dir, :cfg_path, :base_dir, :bin_dir, :hooks_dir, :keys_file_use_command, :keys_file_ssh_opts]
 
     # Auto configure Golem. Tries to find config file, if one can be found executes it, otherwise calls {configure}.
     # @param [String] path path to config file.
@@ -34,12 +34,14 @@ module Golem::Config
     # @overload configure(opts, &block)
     #   @param [Hash] opts options or single path .
     #   @option opts [String] :db db configuration (postgres url or 'static'),
-    #   @option opts [String] :user_home path to user's home directory (needed to place .ssh/authorized_keys), defaults to ENV['HOME'],
-    #   @option opts [String] :repository_dir path to repositories, may be relative to +user_home+,
-    #   @option opts [String] :cfg_path path config file, defaults to +base_dir+ + '/golem.conf.rb' if not set,
+    #   @option opts [String] :user_home (ENV['HOME']) path  to user's home directory (needed to place .ssh/authorized_keys),
+    #   @option opts [String] :repository_dir (user_home + '/repositories') path to repositories, may be relative to +user_home+,
+    #   @option opts [String] :cfg_path (base_dir + '/golem.conf.rb') path config file,
     #   @option opts [String] :base_dir path to base, defaults to in order ENV['GOLEM_BASE'], basedir of config file (if exists), basedir of library,
-    #   @option opts [String] :bin_dir path to directory containing the executable, defaults to +base_dir+ + '/bin' if not set,
-    #   @option opts [String] :hooks_dir path to directory containing hooks, defaults to +base_dir+ + '/hooks' if not set.
+    #   @option opts [String] :bin_dir (base_dir + '/bin') path to directory containing the executables,
+    #   @option opts [String] :hooks_dir (base_dir + '/bin') path to directory containing hooks,
+    #   @option opts [Boolean] :keys_file_use_command controls (false) the .ssh/authorized_keys file syntax (<i>command=""_ or _environment=""</i>), see {file:README#keys_file authorized_keys},
+    #   @option opts [String] :keys_file_ssh_opts (nil) the ssh options to set in .ssh/authorized_keys file, see {file:README#keys_file authorized_keys}.
     # @return [Config] self.
     def self.configure(opts_or_path = nil, &block)
 	opts = opts_or_path.is_a?(Hash) ? opts_or_path : {:cfg_path => opts_or_path}
@@ -59,6 +61,7 @@ module Golem::Config
 	self.cfg_path = base_dir + '/golem.conf.rb' unless cfg_path
 	self.bin_dir = base_dir + '/bin' unless bin_dir
 	self.hooks_dir = base_dir + '/hooks' unless hooks_dir
+	self.keys_file_use_command = false unless keys_file_use_command
 	self
     end
 
