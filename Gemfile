@@ -11,4 +11,5 @@ group :development do
   gem "jeweler", "~> 1.5.2"
   gem "rcov", ">= 0"
   gem "bluecloth"
+  gem "test-unit", "~> 1" #works both for 1.8 and 1.9, backward compatible
 end
