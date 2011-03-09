@@ -50,7 +50,7 @@ class Golem::DB::Pg
 	    sql += " WHERE #{opts.keys.enum_for(:each_with_index).collect {|k, i| k.to_s + ' = $' + (i + 1).to_s}.join(' AND ')}" if opts.length > 0
 	    sql += " ORDER BY #{order.to_s}" if order
 	    sql += " LIMIT #{limit.to_s}" if limit
-	    res = connection.exec(sql, opts.values)
+	    res = @connection.exec(sql, opts.values)
 	    ret_fields = fields === ['*'] ? res.fields : fields
 	    ret = res.collect do |row|
 		if ret_array
