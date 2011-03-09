@@ -55,16 +55,17 @@ Git supports SSH as the transport protocol for pulling and pushing, and assumes 
 Golem authorizes users so it must act before the actual git command runs. Key-based authentication is very popular and the `.ssh/authorized_keys` file allows a few possibilities to achieve what
 golem tries to do, so it seems a natural fit. **Please note:** golem won't work without key-based authentication, as it relies content placed in the `.ssh/authorized_keys` file.
 
-Golem by default requires that you set the users shell to `golem-auth` (wherever it is installed) that is "hosting" the repositories. With that setup golem can simply place lines like
-`environment="GOLEM_USER='username'" ssh-dss AAA...` (where `AAA...` is the key) in the `.ssh/authorized_keys` file and `golem-auth` simply reads that environment variable. However this needs
-that the user's shell is set to `golem-auth`, so golem provides a configuration variable, if you can't or simply don't want to change the user's shell. When `keys_file_use_command` is true golem
-writes lines like `command="/path/to/golem-auth 'username'" ssh-dss AAA...` instead.
+Golem by default requires that you (control your SSHD's options and) set the users shell to `golem-shell` (wherever it is installed) that is "hosting" the repositories. With that setup golem can
+simply place lines like `environment="GOLEM_USER=username" ssh-dss AAA...` (where `AAA...` is the key) in the `.ssh/authorized_keys` file and `golem-shell` simply reads that environment
+variable. (**Please note:** SSHD by default does not permit changing environment variables, you have to enable it with setting `PermitUserEnvironment` to `yes`.) However this needs
+that the user's shell is set to `golem-shell`, so golem provides a configuration variable, if you can't or simply don't want to change the user's shell. When `keys_file_use_command` is true golem
+writes lines like `command="/path/to/golem auth 'username'" ssh-dss AAA...` instead. **Please note:**
 
 Golem supports another configuration variable called `keys_file_ssh_opts`, which is simply placed after the _environment=""_ or _command=""_ block. If `keys_file_use_command` is false (using
 _environment=""_) golem simply injects the string into the lines, however if `keys_file_use_command` is true and `keys_file_ssh_opts` is not set (is `nil`) golem uses
 {Golem::Command::UpdateKeysFile::SSH\_OPTS\_COMMAND\_DEFAULT} (if it is not `nil` golem uses the configuration value). The reasoning behind this distinction is golem assumes you control
 your SSHD's settings if using _environment=""_, but you may not (want to) set (global) restrictions when using _command=""_. The final line looks something like
-`environment="GOLEM_USER='username'",ssh,opts ssh-dss AAA...` or `command="/path/to/golem-auth 'username'",ssh,opts ssh-dss AAA...`.
+`environment="GOLEM_USER=username",ssh,opts ssh-dss AAA...` or `command="/path/to/golem auth 'username'",ssh,opts ssh-dss AAA...`.
 
 **Please note:** golem does not overwrite the whole `.ssh/authorized_keys` file.
 
@@ -165,7 +166,7 @@ Golem provides an executable, and supports a few commands to easily automate the
 
 You can get details about commands running `golem -h` or `--help`.
 
-Golem provides another executable called `golem-auth`, which is a convenience script that calls `golem auth`.
+Golem provides another executable called `golem-shell`, which is a convenience script that calls `golem auth`.
 
 ## Contributing to golem
 

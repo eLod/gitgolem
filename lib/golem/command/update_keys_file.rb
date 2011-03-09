@@ -25,9 +25,9 @@ class Golem::Command::UpdateKeysFile < Golem::Command::Base
 
 	def keys_file_line(user, key)
 	    first_part = if Golem::Config.keys_file_use_command
-		"command=\"#{Golem::Config.bin_dir + '/golem-auth'} '#{user}'\""
+		"command=\"#{Golem::Config.bin_dir + '/golem'} auth '#{user}'\""
 	    else
-		"environment=\"GOLEM_USER='#{user}'\""
+		"environment=\"GOLEM_USER=#{user}\""
 	    end
 	    ssh_opts = if Golem::Config.keys_file_ssh_opts.nil?
 		Golem::Config.keys_file_use_command ? ",#{SSH_OPTS_COMMAND_DEFAULT}" : ""

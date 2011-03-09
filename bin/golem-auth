@@ -1,4 +1,0 @@
-#!/usr/bin/env ruby
-require 'golem'
-ARGV.unshift "auth"
-Golem::Parser.run(ARGV)

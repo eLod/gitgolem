@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require 'golem'
+ENV['SSH_ORIGINAL_COMMAND'] = ARGV[1] if ARGV.length == 2 && ARGV.first == "-c"
+Golem::Parser.run(["auth"])
