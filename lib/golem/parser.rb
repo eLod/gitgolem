@@ -32,9 +32,10 @@ module Golem::Parser
 		opts.separator "\t\tsynonyms: " + Golem::Command::ALIASES[cmd].join(', ') if Golem::Command::ALIASES.key?(cmd)
 	    end
 	end.parse! args
-	Golem::Config.auto_configure(options.delete(:cfg_path))
-	options.each do |key, val|
-	    Golem::Config.send((key.to_s + "=").to_sym, val)
+	Golem::Config.auto_configure(options.delete(:cfg_path)) do
+	    options.each do |key, val|
+		send((key.to_s + "=").to_sym, val)
+	    end
 	end
 	Golem::Command.run(args.shift || "environment", {:verbose => (@verbose || false)}, *args)
     end

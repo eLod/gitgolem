@@ -7,7 +7,7 @@ module Golem::Config
 
     # Auto configure Golem. Tries to find config file, if one can be found executes it, otherwise calls {configure}.
     # @param [String] path path to config file.
-    def self.auto_configure(path = nil)
+    def self.auto_configure(path = nil, &block)
 	path = if ENV.key?('GOLEM_CONFIG') && File.exists?(ENV['GOLEM_CONFIG'])
 	    ENV['GOLEM_CONFIG']
 	elsif ENV.key?('GOLEM_BASE') && File.exists?(ENV['GOLEM_BASE'].to_s + "/golem.conf.rb")
@@ -16,16 +16,11 @@ module Golem::Config
 	    CFG_PATHS.find {|try_path| File.exists?(try_path)}
 	end unless File.exists?(path.to_s)
 	if File.exists?(path.to_s)
+	    @auto_configure_path = path.to_s
+	    @auto_configure_block = block
 	    require path.to_s
-	    if @vars
-		self.cfg_path = path.to_s
-		self
-	    else #configure was not called from config file
-		configure path.to_s
-	    end
-	else
-	    configure path.to_s
 	end
+	configure path unless @vars #configure was not called or there was no config file
     end
 
     # Configure Golem with options given as argument, yield self then setting defaults.
@@ -45,7 +40,9 @@ module Golem::Config
     # @return [Config] self.
     def self.configure(opts_or_path = nil, &block)
 	opts = opts_or_path.is_a?(Hash) ? opts_or_path : {:cfg_path => opts_or_path}
+	opts[:cfg_path] = @auto_configure_path if @auto_configure_path
 	@vars = opts.reject {|k, v| ! CFG_VARS.include?(k)}
+	@auto_configure_block.call(self) if @auto_configure_block
 	yield self if block_given?
 	self.user_home = ENV['HOME'] if user_home.nil? && ENV.key?('HOME')
 	self.repository_dir = user_home + "/repositories" unless repository_dir
