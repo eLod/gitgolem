@@ -35,7 +35,7 @@ class Golem::DB::Pg
     # Setup schema.
     # @return [PGRes] result.
     def setup
-	@connection.exec(File.read(File.expand(File.dirname(__FILE__) + '/postgres.sql')))
+	@connection.exec(File.read(File.expand_path(File.dirname(__FILE__) + '/postgres.sql')))
     end
 
     private
