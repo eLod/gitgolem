@@ -115,7 +115,7 @@ only once). A minimal setup for postgres would be:
 A more complex setup with collaborators:
 
     Golem.configure do |cfg|
-      Golem::DB::Pg.instance_eval do
+      Golem::DB::Pg.class_eval do
         #add method to query collaborators
         def collaborators(opts = {})
           opts[:table] = "collaborators join users on collaborators.user_name=users.name"
@@ -136,14 +136,14 @@ A more complex setup with collaborators:
       end
       Golem::DB.class_eval do
         #add method proxy to check collaborator status
-        def collaborator?(user, repo)
+        def self.collaborator?(user, repo)
           db.collaborator?(user, repo)
         end
       end
       Golem::Access.class_eval do
         #override check to grant access to collaborators
-        alias_method :check_orig, :check
-        def check(user, repo, gitcmd)
+        class << self; alias_method :check_orig, :check end
+        def self.check(user, repo, gitcmd)
           Golem::DB.collaborator?(user, repo) || check_orig(user, repo, gitcmd)
         end
       end
