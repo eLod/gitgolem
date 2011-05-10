@@ -6,7 +6,7 @@ module Golem
 	# Minor version.
 	MINOR = 1
 	# Patch version.
-	PATCH = 1
+	PATCH = 2
 	# Version string.
 	STRING = [MAJOR, MINOR, PATCH].join(".")
     end
