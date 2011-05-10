@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
     "Rakefile",
     "bin/golem",
     "bin/golem-shell",
+    "gitgolem.gemspec",
     "lib/gitgolem.rb",
     "lib/golem.rb",
     "lib/golem/access.rb",
@@ -52,7 +53,7 @@ Gem::Specification.new do |s|
     "test/test_config.rb",
     "test/test_db.rb"
   ]
-  s.homepage = %q{http://github.com/eLod/golem}
+  s.homepage = %q{http://github.com/eLod/gitgolem}
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.7.2}
