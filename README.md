@@ -2,6 +2,11 @@
 
 Golem provides an easy way to host and manage access to git repositories on a server under a single user.
 
+## Gem and library name
+
+The library name is `Golem`, but the gem is called `gitgolem`.
+After installing you could require either 'golem' or 'gitgolem'.
+
 ## How it works
 
 Golem's main goals are:
@@ -72,13 +77,13 @@ your SSHD's settings if using _environment=""_, but you may not (want to) set (g
 ## Access control
 
 Golem's access control by default is very simple. It assumes a repository belongs to a single user, so it grants access to a given repository only to its owner.
-For a very basic setup this should be enough. However for more complex setup Golem does not want to assume how you want to store your users and repositories, so
+For a very basic setup this should be enough. However for more complex setup golem does not want to assume how you want to store your users and repositories, so
 it simply doesn't. You can fine tune your environment to suit your specific needs with overriding {Golem::Access.check} (its arguments are the username, the repository
 name and the git command to run (e.g. one of upload-pack, upload-archive and receive-pack)).
 
 Golem's access control is done at the very beginning, before git-shell is run, so it's not suitable for per-branch or per-directory control. This can be achieved by hooks.
 You should check out {https://github.com/sitaramc/gitolite gitolite}, which supports exactly that (and more). If you want you can place
-{https://github.com/sitaramc/gitolite gitolite}'s hooks in Golem's `hooks_dir` and achieve the same results (this requires deeper understanding of git, so
+{https://github.com/sitaramc/gitolite gitolite}'s hooks in golem's `hooks_dir` and achieve the same results (this requires deeper understanding of git, so
 please be aware).
 
 ## Public access

@@ -13,7 +13,7 @@ require 'jeweler'
 require './lib/golem/version.rb'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "golem"
+  gem.name = "gitgolem"
   gem.homepage = "http://github.com/eLod/golem"
   gem.license = "MIT"
   gem.summary = %Q{Gem to host git repositories.}
@@ -46,6 +46,4 @@ end
 task :default => :test
 
 require 'yard'
-YARD::Rake::YardocTask.new do |yard|
-    yard.options << '--no-private' << '--title' << "Golem #{Golem::Version::STRING} Documentation"
-end
+YARD::Rake::YardocTask.new
