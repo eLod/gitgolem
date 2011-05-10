@@ -14,7 +14,7 @@ require './lib/golem/version.rb'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "gitgolem"
-  gem.homepage = "http://github.com/eLod/golem"
+  gem.homepage = "http://github.com/eLod/gitgolem"
   gem.license = "MIT"
   gem.summary = %Q{Gem to host git repositories.}
   gem.description = %Q{Golem provides an easy way to host and manage access to git repositories on a server under a single user.}
