@@ -16,7 +16,7 @@ Golem's main goals are:
 * store users and keys in a database,
 * to be simple as possible, but still extendable.
 
-Golem is not designed to handle complex access rules, altough it may be extended to achieve that. If you need more refined rules, like per-branch or per-path control
+Golem is not designed to handle complex access rules, although it may be extended to achieve that. If you need more refined rules, like per-branch or per-path control
 you should check out {https://github.com/sitaramc/gitolite gitolite}, which has far superior features in this regard.
 
 The git flow that golem supports is:
